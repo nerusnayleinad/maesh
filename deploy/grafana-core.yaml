@@ -1,515 +1,102 @@
-apiVersion: v1
-items:
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    annotations:
-      deployment.kubernetes.io/revision: "1"
-    creationTimestamp: "2019-10-09T07:13:15Z"
-    generation: 1
-    labels:
-      app: maesh
-      chart: metrics-0.0.6
-      component: grafana
-      heritage: Tiller
-      release: maesh
-    name: grafana-core
-    namespace: maesh
-    resourceVersion: "38956"
-    selfLink: /apis/extensions/v1beta1/namespaces/maesh/deployments/grafana-core
-    uid: d8365ea6-fcb7-47d0-b058-31225b947323
-  spec:
-    progressDeadlineSeconds: 2147483647
-    replicas: 1
-    revisionHistoryLimit: 2147483647
-    selector:
-      matchLabels:
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  generation: 1
+  labels:
+    app: maesh
+    component: grafana
+    release: maesh
+  name: grafana-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+      component: core
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
         app: grafana
         component: core
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app: grafana
-          component: core
-      spec:
-        automountServiceAccountToken: false
-        containers:
-        - image: grafana/grafana:6.2.5
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /api/health
-              port: web
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          name: grafana-core
-          ports:
-          - containerPort: 3000
-            name: web
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /api/health
-              port: web
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: 100m
-              memory: 100Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          volumeMounts:
-          - mountPath: /var/lib/grafana
-            name: metrics-storage
-          - mountPath: /var/lib/grafana/dashboards/traefik.json
-            name: dashboards-grafana-traefik
-            subPath: traefik.json
-          - mountPath: /etc/grafana
-            name: grafana-config
-            readOnly: true
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext:
-          fsGroup: 472
-          runAsNonRoot: true
-          runAsUser: 472
-        serviceAccount: grafana-k8s
-        serviceAccountName: grafana-k8s
-        terminationGracePeriodSeconds: 30
-        volumes:
-        - name: metrics-storage
-          persistentVolumeClaim:
-            claimName: metrics-storage
-        - configMap:
-            defaultMode: 420
-            name: grafana-dashboard-traefik
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - image: grafana/grafana:6.2.5
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/health
+            port: web
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: grafana-core
+        ports:
+        - containerPort: 3000
+          name: web
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/health
+            port: web
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: metrics-storage
+        - mountPath: /var/lib/grafana/dashboards/traefik.json
           name: dashboards-grafana-traefik
-        - configMap:
-            defaultMode: 420
-            items:
-            - key: grafana.ini
-              path: grafana.ini
-            - key: datasources.yaml
-              path: provisioning/datasources/datasources.yaml
-            - key: dashboards.yaml
-              path: provisioning/dashboards/dashboards.yaml
-            name: grafana-config
+          subPath: traefik.json
+        - mountPath: /etc/grafana
           name: grafana-config
-  status:
-    availableReplicas: 1
-    conditions:
-    - lastTransitionTime: "2019-10-09T07:13:15Z"
-      lastUpdateTime: "2019-10-09T07:13:15Z"
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: "True"
-      type: Available
-    observedGeneration: 1
-    readyReplicas: 1
-    replicas: 1
-    updatedReplicas: 1
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    annotations:
-      deployment.kubernetes.io/revision: "1"
-    creationTimestamp: "2019-10-09T07:13:15Z"
-    generation: 1
-    labels:
-      app: jaeger
-      app.kubernetes.io/component: all-in-one
-      app.kubernetes.io/name: jaeger
-    name: jaeger
-    namespace: maesh
-    resourceVersion: "38929"
-    selfLink: /apis/extensions/v1beta1/namespaces/maesh/deployments/jaeger
-    uid: cac749c6-b9e0-4c3c-8f22-68918c94f4ab
-  spec:
-    progressDeadlineSeconds: 2147483647
-    replicas: 1
-    revisionHistoryLimit: 2147483647
-    selector:
-      matchLabels:
-        app: jaeger
-        app.kubernetes.io/component: all-in-one
-        app.kubernetes.io/name: jaeger
-    strategy:
-      type: Recreate
-    template:
-      metadata:
-        annotations:
-          prometheus.io/port: "16686"
-          prometheus.io/scrape: "true"
-        creationTimestamp: null
-        labels:
-          app: jaeger
-          app.kubernetes.io/component: all-in-one
-          app.kubernetes.io/name: jaeger
-      spec:
-        automountServiceAccountToken: false
-        containers:
-        - env:
-          - name: COLLECTOR_ZIPKIN_HTTP_PORT
-            value: "9411"
-          image: jaegertracing/all-in-one:1.13
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: readiness
-            timeoutSeconds: 1
-          name: jaeger
-          ports:
-          - containerPort: 5775
-            name: thrift-legacy
-            protocol: UDP
-          - containerPort: 6831
-            name: compact-thrift
-            protocol: UDP
-          - containerPort: 6832
-            name: binary-thrift
-            protocol: UDP
-          - containerPort: 5778
-            name: serve-configs
-            protocol: TCP
-          - containerPort: 9411
-            name: collector-zip
-            protocol: TCP
-          - containerPort: 14267
-            name: collector-tch
-            protocol: TCP
-          - containerPort: 14268
-            name: collector-http
-            protocol: TCP
-          - containerPort: 14269
-            name: readiness
-            protocol: TCP
-          - containerPort: 16686
-            name: serve-frontend
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /
-              port: readiness
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: 200m
-              memory: 100Mi
-            requests:
-              cpu: 100m
-              memory: 50Mi
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 999
-        serviceAccount: jaeger
-        serviceAccountName: jaeger
-        terminationGracePeriodSeconds: 30
-  status:
-    availableReplicas: 1
-    conditions:
-    - lastTransitionTime: "2019-10-09T07:13:30Z"
-      lastUpdateTime: "2019-10-09T07:13:30Z"
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: "True"
-      type: Available
-    observedGeneration: 1
-    readyReplicas: 1
-    replicas: 1
-    updatedReplicas: 1
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    annotations:
-      deployment.kubernetes.io/revision: "1"
-    creationTimestamp: "2019-10-09T07:13:15Z"
-    generation: 1
-    labels:
-      app: maesh
-      chart: maesh-0.0.5
-      heritage: Tiller
-      release: maesh
-    name: maesh-controller
-    namespace: maesh
-    resourceVersion: "38859"
-    selfLink: /apis/extensions/v1beta1/namespaces/maesh/deployments/maesh-controller
-    uid: ef7e0c4b-55e9-4ed0-ba49-1a3cc48c828c
-  spec:
-    progressDeadlineSeconds: 600
-    replicas: 1
-    revisionHistoryLimit: 10
-    selector:
-      matchLabels:
-        app: maesh
-        component: controller
-        release: maesh
-    strategy:
-      rollingUpdate:
-        maxSurge: 25%
-        maxUnavailable: 25%
-      type: RollingUpdate
-    template:
-      metadata:
-        annotations:
-          prometheus.io/port: "4646"
-          prometheus.io/scrape: "true"
-        creationTimestamp: null
-        labels:
-          app: maesh
-          component: controller
-          release: maesh
-      spec:
-        affinity:
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: component
-                    operator: In
-                    values:
-                    - controller
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-        automountServiceAccountToken: true
-        containers:
-        - args:
-          - --debug
-          - --defaultMode=http
-          - --namespace=$(POD_NAMESPACE)
-          - --ignorenamespaces=
-          env:
-          - name: POD_IP
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: status.podIP
-          - name: POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.namespace
-          image: containous/maesh:v0.4.0
-          imagePullPolicy: IfNotPresent
-          name: maesh-controller
-          resources:
-            limits:
-              cpu: 200m
-              memory: 100Mi
-            requests:
-              cpu: 100m
-              memory: 50Mi
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 999
-        serviceAccount: maesh-controller
-        serviceAccountName: maesh-controller
-        terminationGracePeriodSeconds: 30
-  status:
-    availableReplicas: 1
-    conditions:
-    - lastTransitionTime: "2019-10-09T07:13:20Z"
-      lastUpdateTime: "2019-10-09T07:13:20Z"
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: "True"
-      type: Available
-    - lastTransitionTime: "2019-10-09T07:13:15Z"
-      lastUpdateTime: "2019-10-09T07:13:20Z"
-      message: ReplicaSet "maesh-controller-564bfcdb9f" has successfully progressed.
-      reason: NewReplicaSetAvailable
-      status: "True"
-      type: Progressing
-    observedGeneration: 1
-    readyReplicas: 1
-    replicas: 1
-    updatedReplicas: 1
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    annotations:
-      deployment.kubernetes.io/revision: "1"
-    creationTimestamp: "2019-10-09T07:13:15Z"
-    generation: 1
-    labels:
-      app: maesh
-      chart: metrics-0.0.6
-      component: prometheus
-      heritage: Tiller
-      release: maesh
-    name: prometheus-core
-    namespace: maesh
-    resourceVersion: "38943"
-    selfLink: /apis/extensions/v1beta1/namespaces/maesh/deployments/prometheus-core
-    uid: 592c175f-76b3-4798-86c8-b21e228c6f98
-  spec:
-    progressDeadlineSeconds: 2147483647
-    replicas: 1
-    revisionHistoryLimit: 2147483647
-    selector:
-      matchLabels:
-        app: prometheus
-        component: core
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app: prometheus
-          component: core
-        name: prometheus-main
-      spec:
-        automountServiceAccountToken: true
-        containers:
-        - args:
-          - --storage.tsdb.retention=60d
-          - --storage.tsdb.path="/prometheus/data/"
-          - --web.enable-lifecycle
-          - --config.file=/prometheus/config/prometheus.yaml
-          image: prom/prometheus:v2.11.1
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /-/healthy
-              port: webui
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          name: prometheus
-          ports:
-          - containerPort: 9090
-            name: webui
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /-/ready
-              port: webui
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: 500m
-              memory: 500M
-            requests:
-              cpu: 500m
-              memory: 500M
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          volumeMounts:
-          - mountPath: /prometheus/config
-            name: config-volume
-          - mountPath: /prometheus/rules
-            name: rules-volume
-          - mountPath: /prometheus
-            name: prometheus-storage
-        - args:
-          - --volume-dir=/etc/config
-          - --volume-dir=/etc/rules
-          - --webhook-url=http://localhost:9090/-/reload
-          image: jimmidyson/configmap-reload:v0.2.2
-          imagePullPolicy: IfNotPresent
-          name: configmap-reload
-          resources:
-            limits:
-              cpu: 10m
-              memory: 15Mi
-            requests:
-              cpu: 10m
-              memory: 10Mi
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          volumeMounts:
-          - mountPath: /etc/config
-            name: config-volume
-            readOnly: true
-          - mountPath: /etc/rules
-            name: rules-volume
-            readOnly: true
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext:
-          fsGroup: 2000
-          runAsNonRoot: true
-          runAsUser: 1000
-        serviceAccount: prometheus-k8s
-        serviceAccountName: prometheus-k8s
-        terminationGracePeriodSeconds: 30
-        volumes:
-        - name: prometheus-storage
-          persistentVolumeClaim:
-            claimName: prometheus-storage
-        - configMap:
-            defaultMode: 420
-            name: prometheus-core
-          name: config-volume
-        - configMap:
-            defaultMode: 420
-            name: prometheus-rules
-          name: rules-volume
-  status:
-    availableReplicas: 1
-    conditions:
-    - lastTransitionTime: "2019-10-09T07:13:15Z"
-      lastUpdateTime: "2019-10-09T07:13:15Z"
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: "True"
-      type: Available
-    observedGeneration: 1
-    readyReplicas: 1
-    replicas: 1
-    updatedReplicas: 1
-kind: List
-metadata:
-  resourceVersion: ""
-  selfLink: ""
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 472
+        runAsNonRoot: true
+        runAsUser: 472
+      serviceAccount: grafana-k8s
+      serviceAccountName: grafana-k8s
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: metrics-storage
+        persistentVolumeClaim:
+          claimName: metrics-storage
+      - configMap:
+          defaultMode: 420
+          name: grafana-dashboard-traefik
+        name: dashboards-grafana-traefik
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: grafana.ini
+            path: grafana.ini
+          - key: datasources.yaml
+            path: provisioning/datasources/datasources.yaml
+          - key: dashboards.yaml
+            path: provisioning/dashboards/dashboards.yaml
+          name: grafana-config
+        name: grafana-config
