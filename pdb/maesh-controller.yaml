@@ -1,0 +1,20 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  generation: 1
+  labels:
+    app: maesh
+    release: maesh
+  name: maesh-controller
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: maesh
+      component: controller
+      release: maesh
+status:
+  currentHealthy: 0
+  desiredHealthy: 0
+  disruptionsAllowed: 0
+  expectedPods: 0

@@ -1,0 +1,20 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  generation: 1
+  labels:
+    app: maesh
+    release: maesh
+  name: maesh-mesh
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: maesh
+      component: maesh-mesh
+      release: maesh
+status:
+  currentHealthy: 0
+  desiredHealthy: 0
+  disruptionsAllowed: 0
+  expectedPods: 0

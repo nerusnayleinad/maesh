@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jaeger
+    app.kubernetes.io/component: query
+    app.kubernetes.io/name: jaeger
+  name: jaeger-query
+spec:
+  ports:
+  - name: query-http
+    port: 16686
+    protocol: TCP
+    targetPort: serve-frontend
+  selector:
+    app.kubernetes.io/component: all-in-one
+    app.kubernetes.io/name: jaeger
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

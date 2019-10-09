@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mesh-api
+  name: maesh-mesh-api
+spec:
+  ports:
+  - name: mesh-api
+    port: 8080
+    protocol: TCP
+    targetPort: api
+  selector:
+    component: maesh-mesh
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
