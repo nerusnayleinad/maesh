@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  Corefile: ".:53 {\n    errors\n    health\n    ready\n    kubernetes cluster.local
+    in-addr.arpa ip6.arpa {\n       pods insecure\n       fallthrough in-addr.arpa
+    ip6.arpa\n       ttl 30\n    }\n    prometheus :9153\n    forward . /etc/resolv.conf\n
+    \   cache 30\n    loop\n    reload\n    loadbalance\n}\n\nmaesh:53 {\n    errors\n
+    \   rewrite continue {\n        name regex ([a-zA-Z0-9-_]*)\\.([a-zv0-9-_]*)\\.maesh
+    maesh-{1}-{2}.maesh.svc.cluster.local\n        answer name maesh-([a-zA-Z0-9-_]*)-([a-zA-Z0-9-_]*)\\.maesh\\.svc\\.cluster\\.local
+    {1}.{2}.maesh\n    }\n    kubernetes cluster.local in-addr.arpa ip6.arpa {\n        pods
+    insecure\n        upstream\n    \tfallthrough in-addr.arpa ip6.arpa\n    }\n    forward
+    . /etc/resolv.conf\n    cache 30\n    loop\n    reload\n    loadbalance\n}\n"
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: kube-system
