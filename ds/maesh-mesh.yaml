@@ -64,8 +64,8 @@ spec:
         - --entryPoints.tcp-10024.address=:10024
         - --providers.rest
         - --providers.rest.insecure
-        - --tracing.jaeger.localagenthostport=
-        - --tracing.jaeger.samplingserverurl=
+        - --tracing.jaeger.localagenthostport=jaeger-agent.maesh.svc.cluster.local:6831
+        - --tracing.jaeger.samplingserverurl=http://jaeger-agent.maesh.svc.cluster.local:5778/sampling
         - --api.dashboard
         - --api.insecure
         - --ping
